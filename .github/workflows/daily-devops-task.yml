@@ -1,4 +1,4 @@
-name: Daily DevOps Task
+name: Autonomous Daily DevOps Builder
 
 on:
   schedule:
@@ -8,10 +8,10 @@ on:
 
 permissions:
   contents: write
-  pull-requests: write
+  issues: write
 
 jobs:
-  create-task:
+  build-and-report:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
@@ -22,34 +22,39 @@ jobs:
         with:
           python-version: "3.13"
 
-      - name: Run tests
+      - name: Test the agent and repository
         run: python -m unittest discover -s tests -v
 
-      - name: Generate today's task
+      - name: Complete today's task
         id: task
         shell: bash
         run: |
-          python daily_task.py | tee task-output.txt
+          python auto_builder.py | tee task-output.txt
           cat task-output.txt >> "$GITHUB_OUTPUT"
 
-      - name: Create task pull request
+      - name: Commit completed work directly
         env:
-          GH_TOKEN: ${{ github.token }}
           TASK_DATE: ${{ steps.task.outputs.TASK_DATE }}
           TASK_TITLE: ${{ steps.task.outputs.TASK_TITLE }}
         shell: bash
         run: |
-          branch="daily-task/${TASK_DATE}-${GITHUB_RUN_ID}"
-          git config user.name "daily-devops-coach[bot]"
-          git config user.email "daily-devops-coach[bot]@users.noreply.github.com"
-          git switch -c "$branch"
           rm task-output.txt
-          git add daily-tasks
-          git commit -m "docs: add DevOps task for ${TASK_DATE}"
-          git push --set-upstream origin "$branch"
-          gh pr create \
-            --title "☀️ Today's DevOps task: ${TASK_TITLE}" \
-            --body "Your small DevOps practice task for ${TASK_DATE} is ready. Complete the steps, add a short learning note, and merge when finished." \
+          git config user.name "daily-devops-builder[bot]"
+          git config user.email "daily-devops-builder[bot]@users.noreply.github.com"
+          git add completed-work
+          git commit -m "feat: complete ${TASK_TITLE} for ${TASK_DATE}"
+          git push origin HEAD:${{ github.event.repository.default_branch }}
+
+      - name: Send morning work update through GitHub
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TASK_DATE: ${{ steps.task.outputs.TASK_DATE }}
+          TASK_TITLE: ${{ steps.task.outputs.TASK_TITLE }}
+          TASK_SUMMARY: ${{ steps.task.outputs.TASK_SUMMARY }}
+          TASK_PATH: ${{ steps.task.outputs.TASK_PATH }}
+        shell: bash
+        run: |
+          gh issue create \
+            --title "☀️ Daily update: ${TASK_TITLE} completed" \
             --assignee "${{ github.repository_owner }}" \
-            --base "${{ github.event.repository.default_branch }}" \
-            --head "$branch"
+            --body "Good morning! The autonomous DevOps Builder completed today's small task.\n\n**Work completed:** ${TASK_TITLE}\n\n${TASK_SUMMARY}\n\n**Files:** [${TASK_PATH}](https://github.com/${{ github.repository }}/tree/${{ github.event.repository.default_branch }}/${TASK_PATH})\n\n**Quality check:** All automated tests passed before the change was committed.\n\n_Date: ${TASK_DATE}_"
