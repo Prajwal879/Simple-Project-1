@@ -18,7 +18,7 @@ You can test it immediately from **Actions â†’ Autonomous Daily DevOps Builder â
 
 ### Approve another project by email
 
-Each completion email includes an approval instruction. Reply **APPROVE** to the GitHub notification email (above GitHub's reply marker), or comment **APPROVE** on its issue. A repository-owner approval starts the next project immediately. Without approval, the builder stays quiet until its normal run the following morning.
+Each completion email contains a short human-style report with the repository name, completed project, details, files, and test result. Reply **APPROVE** to start the next project immediately, or **WAIT** to continue the following morning. Any other response is kept as feedback and does not trigger a build. Only the repository owner's approval can start work.
 
 ## What it does
 

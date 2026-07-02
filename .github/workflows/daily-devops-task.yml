@@ -69,6 +69,6 @@ jobs:
         shell: bash
         run: |
           gh issue create \
-            --title "☀️ Daily update: ${TASK_TITLE} completed" \
+            --title "Simple-Project-1 update: ${TASK_TITLE} completed" \
             --assignee "${{ github.repository_owner }}" \
-            --body "Good morning! The autonomous DevOps Builder completed today's small task.\n\n**Work completed:** ${TASK_TITLE}\n\n${TASK_SUMMARY}\n\n**Files:** [${TASK_PATH}](https://github.com/${{ github.repository }}/tree/${{ github.event.repository.default_branch }}/${TASK_PATH})\n\n**Quality check:** All automated tests passed before the change was committed.\n\n### Want the next project now?\nReply **APPROVE** to this GitHub email, or comment **APPROVE** on this issue. The agent will immediately build the next project. If you do nothing, it will wait until tomorrow morning.\n\n_Date: ${TASK_DATE}_"
+            --body "Hi Prajwal,\n\nToday's work is complete.\n\n**Repository:** Simple-Project-1\n**Project completed:** ${TASK_TITLE}\n**Details:** ${TASK_SUMMARY}\n**Files:** [Open the completed project](https://github.com/${{ github.repository }}/tree/${{ github.event.repository.default_branch }}/${TASK_PATH})\n**Tests:** All automated tests passed.\n**Date:** ${TASK_DATE}\n\nWhat should I do next?\n\n1. Reply **APPROVE** — I will start the next project immediately.\n2. Reply **WAIT** — I will wait and build one project tomorrow morning.\n\nAny other reply is treated as feedback only and will not start a project.\n\nThanks,\nDaily DevOps Builder"
