@@ -16,6 +16,10 @@ To receive the pull-request email:
 
 You can test it immediately from **Actions → Autonomous Daily DevOps Builder → Run workflow**. No external email provider is used; GitHub sends its normal issue-assignment and repository notification.
 
+### Approve another project by email
+
+Each completion email includes an approval instruction. Reply **APPROVE** to the GitHub notification email (above GitHub's reply marker), or comment **APPROVE** on its issue. A repository-owner approval starts the next project immediately. Without approval, the builder stays quiet until its normal run the following morning.
+
 ## What it does
 
 - Checks one website or several websites.

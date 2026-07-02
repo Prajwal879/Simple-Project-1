@@ -167,8 +167,18 @@ def task_for(day: date) -> dict:
     return TASKS[day.toordinal() % len(TASKS)]
 
 
+def next_task(root: Path) -> dict:
+    """Choose the first project type that has not been built yet."""
+    completed_root = root / "completed-work"
+    folder_names = [path.name for path in completed_root.iterdir() if path.is_dir()] if completed_root.exists() else []
+    for task in TASKS:
+        if not any(name.endswith(f"-{task['slug']}") for name in folder_names):
+            return task
+    return TASKS[len(folder_names) % len(TASKS)]
+
+
 def build(day: date, root: Path) -> tuple[Path, dict]:
-    task = task_for(day)
+    task = next_task(root)
     destination = root / "completed-work" / f"{day.isoformat()}-{task['slug']}"
     destination.mkdir(parents=True, exist_ok=True)
     for relative_path, content in task["files"].items():

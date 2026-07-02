@@ -3,7 +3,7 @@ import unittest
 from datetime import date
 from pathlib import Path
 
-from auto_builder import TASKS, build, task_for
+from auto_builder import TASKS, build, next_task, task_for
 
 
 class AutoBuilderTests(unittest.TestCase):
@@ -21,6 +21,13 @@ class AutoBuilderTests(unittest.TestCase):
             self.assertTrue((output / "README.md").exists())
             for name in task["files"]:
                 self.assertTrue((output / name).exists())
+
+    def test_next_task_skips_completed_project_type(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            completed = root / "completed-work" / f"2026-07-01-{TASKS[0]['slug']}"
+            completed.mkdir(parents=True)
+            self.assertEqual(next_task(root), TASKS[1])
 
 
 if __name__ == "__main__":
