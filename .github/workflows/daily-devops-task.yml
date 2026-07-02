@@ -1,0 +1,55 @@
+name: Daily DevOps Task
+
+on:
+  schedule:
+    # 03:30 UTC is 09:00 India Standard Time.
+    - cron: "30 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  create-task:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Run tests
+        run: python -m unittest discover -s tests -v
+
+      - name: Generate today's task
+        id: task
+        shell: bash
+        run: |
+          python daily_task.py | tee task-output.txt
+          cat task-output.txt >> "$GITHUB_OUTPUT"
+
+      - name: Create task pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TASK_DATE: ${{ steps.task.outputs.TASK_DATE }}
+          TASK_TITLE: ${{ steps.task.outputs.TASK_TITLE }}
+        shell: bash
+        run: |
+          branch="daily-task/${TASK_DATE}-${GITHUB_RUN_ID}"
+          git config user.name "daily-devops-coach[bot]"
+          git config user.email "daily-devops-coach[bot]@users.noreply.github.com"
+          git switch -c "$branch"
+          rm task-output.txt
+          git add daily-tasks
+          git commit -m "docs: add DevOps task for ${TASK_DATE}"
+          git push --set-upstream origin "$branch"
+          gh pr create \
+            --title "☀️ Today's DevOps task: ${TASK_TITLE}" \
+            --body "Your small DevOps practice task for ${TASK_DATE} is ready. Complete the steps, add a short learning note, and merge when finished." \
+            --assignee "${{ github.repository_owner }}" \
+            --base "${{ github.event.repository.default_branch }}" \
+            --head "$branch"

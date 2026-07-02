@@ -4,6 +4,18 @@ A beginner-friendly DevOps project that checks whether websites are reachable an
 
 This project is completely free and uses only Python's standard library—there are no packages, API keys, subscriptions, or servers to configure.
 
+## Daily DevOps Coach ☀️
+
+At **9:00 AM India time every day**, a free GitHub Actions workflow creates one very small DevOps learning task in `daily-tasks/` and opens a pull request assigned to the repository owner. Each task contains a goal, three short steps, a completion check, and space to record what you learned.
+
+To receive the pull-request email:
+
+1. On GitHub, open **Settings → Actions → General → Workflow permissions** and enable **Allow GitHub Actions to create and approve pull requests**.
+2. Open this repository's **Watch** menu and choose **All Activity**.
+3. Ensure email notifications are enabled in your GitHub notification settings.
+
+You can test it immediately from **Actions → Daily DevOps Task → Run workflow**. No external email provider is used; GitHub sends its normal assignment and repository notification.
+
 ## What it does
 
 - Checks one website or several websites.
